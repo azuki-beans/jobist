@@ -1,0 +1,67 @@
+name: Build & Deploy (Cloud Run Job)
+
+# Solo al push di un tag di versione (git tag v1.2.3 && git push origin v1.2.3), mai sui branch.
+on:
+  push:
+    tags:
+      - "v*"
+
+# Variabili del repository (Settings → Secrets and variables → Actions → Variables):
+#   GCP_PROJECT_ID     progetto GCP
+#   GCP_WIF_PROVIDER   projects/<numero>/locations/global/workloadIdentityPools/github/providers/github
+#   GCP_DEPLOY_SA      service account di deploy (github-deploy@<progetto>.iam.gserviceaccount.com)
+# Workload Identity Federation: nessuna chiave JSON. GCP accetta solo token emessi per
+# l'environment "production" di questo repository, che richiede un'approvazione manuale
+# (vedi docs/deploy-cloud-run.md).
+env:
+  REGION: europe-west1
+  REGISTRY: europe-west1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/jobist
+
+permissions: {}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Autenticazione a Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SA }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Login ad Artifact Registry
+        run: gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
+
+      - uses: docker/setup-buildx-action@v3
+
+      # Cloud Run è solo amd64: niente QEMU, niente multi-arch.
+      - name: Build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/jobist:${{ github.ref_name }}
+            ${{ env.REGISTRY }}/jobist:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Configurazione (env, segreti, service account, scheduler) fatta una volta su GCP
+      # (docs/deploy-cloud-run.md): qui cambia solo l'immagine.
+      - name: Aggiorna il job
+        run: >
+          gcloud run jobs update jobist
+          --image ${{ env.REGISTRY }}/jobist:${{ github.ref_name }}
+          --region ${{ env.REGION }} --project ${{ vars.GCP_PROJECT_ID }} --quiet

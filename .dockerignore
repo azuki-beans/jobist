@@ -1,0 +1,26 @@
+# Nell'immagine entra solo il necessario per eseguire il job (pyproject, lock, package jobist).
+# Ogni esclusione è definitiva: segreti, dati locali, documentazione, test e tooling restano fuori.
+.git
+.github
+.gitignore
+.idea
+.vscode
+.venv
+venv
+**/__pycache__
+**/*.pyc
+*.sqlite3
+*.log
+*.md
+LICENSE
+docs
+tests
+stacks
+.env
+.env.*
+.ruff_cache
+.pytest_cache
+*.json
+Dockerfile
+.dockerignore
+.DS_Store

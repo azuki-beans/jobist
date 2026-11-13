@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.sqlite3
+.DS_Store
+.ruff_cache/
+.pytest_cache/
+
+# Segreti locali e stack (non committati).
+.env
+stacks/
