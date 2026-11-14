@@ -32,12 +32,12 @@ def test_dedup_e_invio(archivio):
     assert set(archivio.url_recenti()) == {"https://x.it/1", "https://x.it/2"}
 
 
-def test_brief_usa_criteri_o_query(settings):
+def test_brief_profilo_e_criteri(settings):
     assert costruisci_brief(settings) == ""
     settings.job_search_query = "Python remoto"
     assert costruisci_brief(settings) == "- Profilo: Python remoto"
     settings.job_search_ruolo = "Backend"
-    assert costruisci_brief(settings) == "- Ruolo: Backend"
+    assert costruisci_brief(settings) == "- Profilo: Python remoto\n- Ruolo: Backend"
 
 
 def test_domini_csv_e_precedenza(monkeypatch):

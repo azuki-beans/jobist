@@ -44,8 +44,9 @@ _SCHEMA_ANNUNCI = {
 
 
 def costruisci_brief(s: Settings) -> str:
-    """Compone i criteri valorizzati in un elenco; ripiega su JOB_SEARCH_QUERY."""
+    """Compone in un elenco il profilo (JOB_SEARCH_QUERY) e i criteri valorizzati."""
     criteri = [
+        ("Profilo", s.job_search_query),
         ("Ruolo", s.job_search_ruolo),
         ("Stack/competenze", s.job_search_stack),
         ("Seniority", s.job_search_seniority),
@@ -54,12 +55,9 @@ def costruisci_brief(s: Settings) -> str:
         ("RAL minima", s.job_search_ral_minima),
         ("Da escludere", s.job_search_esclusioni),
     ]
-    righe = [f"- {etichetta}: {valore.strip()}" for etichetta, valore in criteri if valore.strip()]
-    if righe:
-        return "\n".join(righe)
-    if s.job_search_query.strip():
-        return f"- Profilo: {s.job_search_query.strip()}"
-    return ""
+    return "\n".join(
+        f"- {etichetta}: {valore.strip()}" for etichetta, valore in criteri if valore.strip()
+    )
 
 
 def web_search_tool(s: Settings) -> dict:

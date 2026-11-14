@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     anthropic_effort: str = "high"
 
     # --- Criteri di ricerca (i campi vuoti vengono ignorati) ------------------
-    job_search_query: str = ""  # descrizione libera, usata se i criteri sotto sono vuoti
+    job_search_query: str = ""  # profilo in testo libero, sempre incluso nel brief
     job_search_ruolo: str = ""
     job_search_stack: str = ""
     job_search_seniority: str = ""
