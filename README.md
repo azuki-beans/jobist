@@ -68,7 +68,7 @@ Vedi [`docs/deploy-cloud-run.md`](docs/deploy-cloud-run.md).
 
 ## Costi
 
-L'infrastruttura (Cloud Run Job una volta al giorno, Scheduler, un file su GCS) rientra di norma
+L'infrastruttura (Cloud Run Job un paio di volte alla settimana, Scheduler, un file su GCS) rientra di norma
 nel free tier di Google Cloud. La voce principale è la Claude API: token e ricerche web.
 `ANTHROPIC_EFFORT` e `WEB_SEARCH_MAX_USES` sono le leve per contenerla.
 

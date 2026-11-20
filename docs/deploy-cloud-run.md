@@ -73,10 +73,35 @@ gcloud run jobs add-iam-policy-binding jobist --project $PROJECT --region $REGIO
   --role roles/run.invoker
 
 gcloud scheduler jobs create http jobist-giornaliero --project $PROJECT --location $REGION \
-  --schedule "0 8 * * *" --time-zone "Europe/Rome" --http-method POST \
+  --schedule "0 8 * * 1,4" --time-zone "Europe/Rome" --http-method POST \
   --uri "https://run.googleapis.com/v2/projects/$PROJECT/locations/$REGION/jobs/jobist:run" \
   --oauth-service-account-email jobist-scheduler@$PROJECT.iam.gserviceaccount.com
 ```
+
+`0 8 * * 1,4` significa lunedì e giovedì alle 8:00. I giorni vanno da 0 (domenica) a 6 (sabato);
+`0 8 * * *` lo fa girare tutti i giorni. La finestra di ricerca (`JOB_SEARCH_GIORNI`, default 14)
+deve restare più lunga dell'intervallo tra due esecuzioni.
+
+### Cambiare la pianificazione
+
+Lo schedule vive solo in Cloud Scheduler: il deploy da GitHub non lo tocca, quindi non serve una
+release.
+
+Da riga di comando:
+
+```bash
+gcloud scheduler jobs update http jobist-giornaliero --project $PROJECT --location $REGION \
+  --schedule "0 8 * * 1,4" --time-zone "Europe/Rome"
+```
+
+Dalla console: **Cloud Scheduler** (non la pagina del job Cloud Run), seleziona la regione del
+job, clicca su `jobist-giornaliero` → **Modifica**, cambia il campo **Frequenza** nella sezione
+"Definisci la pianificazione" e salva. Dalla pagina del job Cloud Run, scheda **Trigger**, il link
+al trigger porta allo stesso punto.
+
+Il nome del job Scheduler non si può cambiare: per rinominarlo va creato un nuovo job con
+`gcloud scheduler jobs create` (come sopra) e cancellato il vecchio con
+`gcloud scheduler jobs delete`.
 
 ## 5. GitHub Actions con Workload Identity Federation
 
