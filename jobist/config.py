@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     job_search_seniority: str = ""
     job_search_modalita: str = ""
     job_search_localita: str = ""
+    # Area ammessa per gli annunci full remote: scarta quelli riservati ad altre aree e i
+    # "worldwide". Stringa vuota = nessun vincolo.
+    job_search_area_remoto: str = "Europa"
     job_search_ral_minima: str = ""
     job_search_esclusioni: str = ""
     job_search_giorni: int = Field(14, ge=1)
