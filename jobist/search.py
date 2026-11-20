@@ -52,6 +52,7 @@ def costruisci_brief(s: Settings) -> str:
         ("Seniority", s.job_search_seniority),
         ("Modalità di lavoro", s.job_search_modalita),
         ("Località", s.job_search_localita),
+        ("Area ammessa per il full remote", s.job_search_area_remoto),
         ("RAL minima", s.job_search_ral_minima),
         ("Da escludere", s.job_search_esclusioni),
     ]
@@ -85,6 +86,18 @@ def web_search_tool(s: Settings) -> dict:
     return tool
 
 
+def _regola_area_remoto(s: Settings) -> str:
+    area = s.job_search_area_remoto.strip()
+    if not area:
+        return ""
+    return (
+        f"- Full remote solo se aperto a chi risiede in {area}: l'annuncio deve indicarlo "
+        f"(es. \"Remote - {area}\", un paese di quell'area, fuso orario compatibile). Scarta "
+        "i remoti riservati ad altre aree (USA, Americhe, APAC…) e quelli \"worldwide\" o "
+        "senza area indicata.\n"
+    )
+
+
 def _prompt(s: Settings, brief: str, gia_visti: list[str]) -> str:
     oggi = datetime.now(ZoneInfo(s.timezone)).date()
     soglia = oggi - timedelta(days=s.job_search_giorni)
@@ -96,10 +109,11 @@ def _prompt(s: Settings, brief: str, gia_visti: list[str]) -> str:
         "- Usa fonti diverse: job board, pagine carriere delle aziende, LinkedIn.\n"
         f"- Solo annunci pubblicati dopo il {soglia:%d/%m/%Y} e ancora aperti.\n"
         "- Rispetta le esclusioni indicate nei criteri.\n"
+        f"{_regola_area_remoto(s)}"
         "- Ogni risultato è un singolo annuncio con URL diretto, non una pagina di elenco.\n"
         f"- Al massimo {s.job_search_max_risultati} risultati, i più rilevanti.\n"
         "- Per ognuno: url, titolo, fonte e 1-2 frasi in italiano con il motivo concreto "
-        "della pertinenza (stack, seniority, modalità, RAL)."
+        "della pertinenza (stack, seniority, modalità, località, RAL)."
     )
     if gia_visti:
         prompt += "\n\nQuesti annunci li conosco già, non riproporli:\n" + "\n".join(gia_visti)

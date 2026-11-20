@@ -30,7 +30,7 @@ Tutto si configura con variabili d'ambiente: vedi [`.env.example`](.env.example)
 | `ANTHROPIC_API_KEY` | Chiave della Claude API (obbligatoria) |
 | `ANTHROPIC_MODEL`, `ANTHROPIC_EFFORT` | Modello (default `claude-opus-5-5`) e profondità della ricerca |
 | `NOTIFY_URLS` | Uno o più URL Apprise separati da spazio o virgola ([formati](https://github.com/caronc/apprise/wiki)) |
-| `JOB_SEARCH_*` | Criteri: ruolo, stack, seniority, modalità, località, RAL, esclusioni, freschezza, numero massimo |
+| `JOB_SEARCH_*` | Criteri: ruolo, stack, seniority, modalità, località, area per il full remote (`JOB_SEARCH_AREA_REMOTO`, default `Europa`), RAL, esclusioni, freschezza, numero massimo |
 | `WEB_SEARCH_*` | Numero di ricerche, domini ammessi/esclusi, localizzazione |
 | `JOBIST_DB_PATH` | File SQLite locale |
 | `JOBIST_DB_GCS_URI` | `gs://bucket/jobist.sqlite3` per tenere il database su GCS |

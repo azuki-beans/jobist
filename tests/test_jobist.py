@@ -4,7 +4,7 @@ import pytest
 
 from jobist.config import Settings
 from jobist.notify import _urls, componi_digest
-from jobist.search import costruisci_brief, web_search_tool
+from jobist.search import _prompt, costruisci_brief, web_search_tool
 from jobist.store import Annuncio, Archivio
 
 
@@ -33,11 +33,20 @@ def test_dedup_e_invio(archivio):
 
 
 def test_brief_profilo_e_criteri(settings):
+    settings.job_search_area_remoto = ""
     assert costruisci_brief(settings) == ""
     settings.job_search_query = "Python remoto"
     assert costruisci_brief(settings) == "- Profilo: Python remoto"
     settings.job_search_ruolo = "Backend"
     assert costruisci_brief(settings) == "- Profilo: Python remoto\n- Ruolo: Backend"
+
+
+def test_area_remoto_nel_prompt(settings):
+    assert settings.job_search_area_remoto == "Europa"  # default
+    assert "Area ammessa per il full remote: Europa" in costruisci_brief(settings)
+    assert "Full remote solo se aperto a chi risiede in Europa" in _prompt(settings, "x", [])
+    settings.job_search_area_remoto = ""
+    assert "Full remote" not in _prompt(settings, "- Ruolo: Dev", [])
 
 
 def test_domini_csv_e_precedenza(monkeypatch):
